@@ -1,4 +1,4 @@
-# gulp + ES2016 (watchify), SCSS, browser-sync
+# gulp + babel (ES2016), watchify, SCSS, browser-sync
 
 - gulp
 - babel + ES2016
