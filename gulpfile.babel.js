@@ -4,6 +4,7 @@ import babelify from 'babelify';
 import watchify from 'watchify';
 import buffer from 'vinyl-buffer';
 import source from 'vinyl-source-stream';
+import browserSync from 'browser-sync';
 import gulpLoadPlugins from 'gulp-load-plugins';
 const $ = gulpLoadPlugins();
 
@@ -36,11 +37,46 @@ function bundle(watching = false) {
   return bundler();
 }
 
-gulp.task('build', () => {
+gulp.task('scripts', () => {
   bundle();
 });
 
+gulp.task('styles', () => {
+  // `src/styles/**.scss` を `assets/` にビルド
+  gulp.src(`src/styles/**/*.scss`)
+    .pipe($.plumber())
+    .pipe($.sourcemaps.init())
+    .pipe($.sass({
+      includePaths: ['.']
+    }).on('error', $.sass.logError))
+    .pipe($.autoprefixer())
+    .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest('assets'))
+});
+
+gulp.task('build', ['scripts', 'styles']);
+
 gulp.task('watch', () => {
   bundle(true);
-  // その他の watch タスクがあればここに書く (CSSなど)
+  gulp.watch('src/styles/**/*.scss', ['styles']);
 });
+
+gulp.task('serve', ['watch'], () => {
+  browserSync({
+    notify: false,
+    port: 9000,
+    // proxy: 'example.com',
+    server: {
+      baseDir: '.'
+    }
+  });
+
+  gulp.watch([
+    '**/*.html',
+    '**/*.php',
+    'assets/**/*.css',
+    'assets/**/*.js'
+  ]).on('change', browserSync.reload);
+});
+
+gulp.task('default', ['build', 'serve']);
