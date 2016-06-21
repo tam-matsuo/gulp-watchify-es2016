@@ -22,4 +22,4 @@
 from `/src/scripts/main.js` to `/assets/scripts.js`
 
 - styles  
-from `src/styles/*.scss` to `/assets/*.css`
+from `/src/styles/*.scss` to `/assets/*.css`
